@@ -1,5 +1,5 @@
 var mongoose = require('mongoose'),
-    Player = mongoose.model('Player');
+    Player = mongoose.model('Players');
 
 exports.list = (req, res) => {
     Player.find({}, (err,player) => {

@@ -1,5 +1,5 @@
 var mongoose = require('mongoose'),
-    Game = mongoose.model('Game');
+    Game = mongoose.model('Games');
 
 exports.listRecent = (req, res) => {
     Game.find(
