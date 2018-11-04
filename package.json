@@ -18,5 +18,8 @@
   "homepage": "https://github.com/justynhunter/resistats-backend#readme",
   "devDependencies": {
     "nodemon": "^1.18.5"
+  },
+  "dependencies": {
+    "express": "^4.16.4"
   }
 }
