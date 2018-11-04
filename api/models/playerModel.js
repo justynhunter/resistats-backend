@@ -7,7 +7,7 @@ var playerSchema = new Schema({
         required: 'name is required'
     },
     phone: {
-        type: string
+        type: String
     },
     playersGames: {
         type: Schema.Types.ObjectId, ref: 'playerGames'

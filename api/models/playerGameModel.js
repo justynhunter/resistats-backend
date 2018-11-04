@@ -7,7 +7,7 @@ var playerGameSchema = new Schema({
         required: 'team is required'
     },
     isWinner: {
-        type: boolean,
+        type: Boolean,
         default: false
     },
     games: { type: Schema.Types.ObjectId, ref: 'games' },
