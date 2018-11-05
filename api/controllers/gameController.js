@@ -76,6 +76,7 @@ exports.addPlayer = (req, res) => {
     var playerGame = new PlayerGame();
     playerGame.gameId = req.params.gameId;
     playerGame.playerId = req.params.playerId;
+    playerGame.team = req.body.team;
     
     playerGame.save((err,playergame) => {
         if (err)
