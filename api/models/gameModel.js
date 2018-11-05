@@ -6,9 +6,9 @@ var gameSchema = new Schema({
         type: Date,
         required: 'datePlayed is required'
     },
-    playersGames: {
+    playersGames: [{
         type: Schema.Types.ObjectId, ref: 'playerGames'
-    }
+    }]
 });
 
 module.exports = mongoose.model('Games', gameSchema);
