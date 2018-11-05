@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
     Game = mongoose.model('Games'),
+    Player = mongoose.model('Players'),
     PlayerGame = mongoose.model('PlayerGames');
 
 // /game
@@ -62,25 +63,65 @@ exports.delete = (req,res) => {
 }
 
 // /game/:gameId/players
-exports.getPlayers = (req, res) => {
-    var playerGame = PlayerGame.find({gameId: req.params.gameId});
-    var players = [];
-    playerGame.forEach((playerGame) => {
-        players.push(playerGame.player);
-    });
-    res.json(players);
+exports.getPlayers = async (req, res) => {
+    var game = {};
+    await Game.findOne(
+        {_id: req.params.gameId},
+        (err, g) => {
+            if (err) res.send(err);
+            game = g;
+        }
+    ).populate('playerGames');
+
+    console.log(game);
+
+    PlayerGame
+        .find({game: game})
+        .exec(async (err, playerGames) => {
+            if (err)
+                res.send(err);
+
+            var players = [];
+            var mapping = await playerGames.map(async pg => {
+                await Player.findOne(
+                    {_id: pg.player._id},
+                    (err, player) => {
+                        if (err) res.send(err);
+                        console.log('here: ' + player);
+                        players.push(player);
+                    }
+                );
+            });
+
+            Promise.all(mapping).then(() => {
+                console.log('res');
+                console.log(players);
+                res.json(players);  
+            })
+        }
+    );
 };
 
 // /game/:gameId/players/:playerId
-exports.addPlayer = (req, res) => {
+exports.addPlayer = async (req, res) => {
+    var player = {};
+    await Player.findOne({_id: req.params.playerId}, (err, p) => {
+        if (err) res.send(err);
+        player = p;
+    });
+    var game = {};
+    await Game.findOne({_id: req.params.gameId}, (err, g) => {
+        if (err) res.send(err);
+        game = g;
+    });
+
     var playerGame = new PlayerGame();
-    playerGame.gameId = req.params.gameId;
-    playerGame.playerId = req.params.playerId;
+    playerGame.game = game;
+    playerGame.player = player;
     playerGame.team = req.body.team;
-    
+
     playerGame.save((err,playergame) => {
-        if (err)
-            res.send(err);
+        if (err) res.send(err);
         res.json(playerGame);
     });
 }
