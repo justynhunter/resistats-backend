@@ -10,4 +10,11 @@ module.exports = function(app) {
         .get(games.get)
         .put(games.update)
         .delete(games.delete);
+
+    app.route('/game/:gameId/players')
+        .get(games.getPlayers);
+
+    app.route('/game/:gameId/players/:playerId')
+        .post(games.addPlayer)
+        .delete(games.removePlayer);
 };

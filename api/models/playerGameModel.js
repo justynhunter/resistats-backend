@@ -10,8 +10,8 @@ var playerGameSchema = new Schema({
         type: Boolean,
         default: false
     },
-    games: { type: Schema.Types.ObjectId, ref: 'games' },
-    players: { type: Schema.Types.ObjectId, ref: 'players' }
+    game: { type: Schema.Types.ObjectId, ref: 'games' },
+    player: { type: Schema.Types.ObjectId, ref: 'players' }
 });
 
 module.exports = mongoose.model('PlayerGames', playerGameSchema);

@@ -1,6 +1,8 @@
 var mongoose = require('mongoose'),
-    Game = mongoose.model('Games');
+    Game = mongoose.model('Games'),
+    PlayerGame = mongoose.model('PlayerGames');
 
+// /game
 exports.listRecent = (req, res) => {
     Game.find(
         {},
@@ -23,6 +25,7 @@ exports.create = (req, res) => {
     });
 };
 
+// /game/:gameId
 exports.get = (req, res) => {
     Game.findById(req.params.gameId, (err, game) => {
         if (err)
@@ -53,5 +56,42 @@ exports.delete = (req,res) => {
             res.json({message: 'Game deleted'});
         }
         
+    )
+}
+
+// /game/:gameId/players
+exports.getPlayers = (req, res) => {
+    var playerGame = PlayerGame.find({gameId: req.params.gameId});
+    var players = [];
+    playerGame.forEach((playerGame) => {
+        players.push(playerGame.player);
+    });
+    res.json(players);
+};
+
+// /game/:gameId/players/:playerId
+exports.addPlayer = (req, res) => {
+    var playerGame = new PlayerGame();
+    playerGame.gameId = req.params.gameId;
+    playerGame.playerId = req.params.playerId;
+    
+    playerGame.save((err,playergame) => {
+        if (err)
+            res.send(err);
+        res.json(playerGame);
+    });
+}
+
+exports.removePlayer = (req, res) => {
+    PlayerGame.remove(
+        {
+            gameId: req.params.gameId,
+            playerId: req.params.playerId
+        },
+        (err, playerGame) => {
+            if (err)
+                res.send(err);
+            res.json({message: 'player removed'});
+        }
     )
 }
