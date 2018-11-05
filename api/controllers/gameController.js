@@ -17,7 +17,9 @@ exports.listRecent = (req, res) => {
 };
 
 exports.create = (req, res) => {
-    var newGame = new Game(req.body);
+    var newGame = new Game();
+    newGame.datePlayed = new Date();
+    
     newGame.save((err,game) => {
         if (err)
             res.send(err);
