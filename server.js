@@ -4,7 +4,6 @@ var express = require('express'),
     mongoose = require('mongoose'),
     Game = require('./api/models/gameModel'),
     Player = require('./api/models/playerModel'),
-    PlayerGame = require('./api/models/playerGameModel'),
     bodyParser = require('body-parser');
 
 // mongoose config

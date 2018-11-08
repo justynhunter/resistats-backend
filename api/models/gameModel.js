@@ -6,12 +6,12 @@ var gameSchema = new Schema({
         type: Date,
         required: 'datePlayed is required'
     },
-    spies: {
+    spies: [{
         type: Schema.Types.ObjectId, ref: 'Players'
-    },
-    resistance: {
+    }],
+    resistance: [{
         type: Schema.Types.ObjectId, ref: 'Players'
-    },
+    }],
     winner: {
         type: String
     }
