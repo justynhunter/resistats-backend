@@ -13,7 +13,8 @@ exports.listRecent = (req, res) => {
                 res.send(err);
             res.json(game);
         }
-    );
+    ).populate('spies')
+    .populate('resistance');
 };
 
 exports.create = (req, res) => {
@@ -63,41 +64,17 @@ exports.delete = (req,res) => {
 
 // /game/:gameId/players
 // GET
-exports.getPlayers = async (req, res) => {
-    var game = {};
-    await Game.findOne(
-        {_id: req.params.gameId},
-        (err, g) => {
+exports.getPlayers = (req, res) => {
+    var players = [];
+    Game.findOne({_id: req.params.gameId})
+        .populate('spies')
+        .populate('resistance')
+        .exec((err, game) => {
             if (err) res.send(err);
-            game = g;
-        }
-    ).populate('playerGames');
-
-    console.log(game);
-
-    PlayerGame
-        .find({game: game})
-        .exec(async (err, playerGames) => {
-            if (err)
-                res.send(err);
-
-            var players = [];
-            var mapping = await playerGames.map(async pg => {
-                await Player.findOne(
-                    {_id: pg.player._id},
-                    (err, player) => {
-                        if (err) res.send(err);
-                        console.log('here: ' + player);
-                        players.push(player);
-                    }
-                );
-            });
-
-            Promise.all(mapping).then(() => {
-                console.log('res');
-                console.log(players);
-                res.json(players);  
-            })
+            players.push(...game.resistance);
+            players.push(...game.spies);
+            players = shuffle(players);
+            res.json(players);
         }
     );
 };
@@ -118,20 +95,46 @@ exports.addPlayer = async (req, res) => {
         else if (req.body.team == 'resistance')
             game.resistance.push(player);
     });
+
+    await Game.updateOne({_id: req.params.gameId}, game);
+
     res.json(game);
 };
 
 // DELETE
 exports.removePlayer = (req, res) => {
-    PlayerGame.remove(
-        {
-            gameId: req.params.gameId,
-            playerId: req.params.playerId
-        },
-        (err, playerGame) => {
-            if (err)
-                res.send(err);
-            res.json({message: 'player removed'});
+    Game.findById(req.params.gameId, (err, game) => {
+        var index = game.spies.indexOf(req.body.playerId);
+        if (index > -1) {
+            game.spies.splice(index, 1);
         }
-    )
+        index = game.resistance.indexOf(req.body.playerId);
+        if (index > -1) {
+            game.resistance.splice(index, 1);
+        }
+        Game.updateOne({_id: req.params.gameId}, game, (err) => {
+            if (err) res.send(err);
+            res.json(game);
+        });
+
+    });
 };
+
+const shuffle = (array) => {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+  
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+  
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+  
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+  
+    return array;
+  }
