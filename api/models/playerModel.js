@@ -8,9 +8,6 @@ var playerSchema = new Schema({
     },
     phone: {
         type: String
-    },
-    playersGames: {
-        type: Schema.Types.ObjectId, ref: 'playerGames'
     }
 });
 
