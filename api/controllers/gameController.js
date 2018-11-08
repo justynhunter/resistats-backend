@@ -4,17 +4,17 @@ var mongoose = require('mongoose'),
 
 // /game
 exports.listRecent = (req, res) => {
-    Game.find(
-        {},
-        null,
-        {sort: 'datePlayed'},
-        (err,game) => {
+    Game
+        .find()
+        .sort('-date')
+        .limit(10)
+        .populate('spies')
+        .populate('resistance')
+        .exec((err, games) => {
             if (err)
                 res.send(err);
-            res.json(game);
-        }
-    ).populate('spies')
-    .populate('resistance');
+            res.json(games);
+        });
 };
 
 exports.create = (req, res) => {
