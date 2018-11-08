@@ -15,4 +15,10 @@ module.exports = function(app) {
         .get(games.getPlayers)
         .post(games.addPlayer)
         .delete(games.removePlayer);
+    
+    app.route('/game/:gameId/players/spies')
+        .get(games.getSpies);
+    
+    app.route('/game/:gameId/players/resistance')
+        .get(games.getResistance);
 };

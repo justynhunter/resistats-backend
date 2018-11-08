@@ -120,6 +120,23 @@ exports.removePlayer = (req, res) => {
     });
 };
 
+// /games/:gameId/players/spies
+exports.getSpies = (req, res) => {
+    Game.findById(req.params.gameId, (err, game) => {
+        if (err) res.send(err);
+        res.json(game.spies);
+    }).populate('spies');
+};
+
+// /games/:gameId/players/resistance
+exports.getResistance = (req, res) => {
+    Game.findById(req.params.gameId, (err, game) => {
+        if (err) res.send(err);
+        res.json(game.resistance);
+    }).populate('resistance');
+};
+
+// Util
 const shuffle = (array) => {
     var currentIndex = array.length, temporaryValue, randomIndex;
   
