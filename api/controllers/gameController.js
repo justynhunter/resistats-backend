@@ -1,7 +1,6 @@
 var mongoose = require('mongoose'),
     Game = mongoose.model('Games'),
-    Player = mongoose.model('Players'),
-    PlayerGame = mongoose.model('PlayerGames');
+    Player = mongoose.model('Players');
 
 // /game
 exports.listRecent = (req, res) => {
@@ -63,6 +62,7 @@ exports.delete = (req,res) => {
 }
 
 // /game/:gameId/players
+// GET
 exports.getPlayers = async (req, res) => {
     var game = {};
     await Game.findOne(
@@ -102,30 +102,26 @@ exports.getPlayers = async (req, res) => {
     );
 };
 
-// /game/:gameId/players/:playerId
+// POST
 exports.addPlayer = async (req, res) => {
-    var player = {};
-    await Player.findOne({_id: req.params.playerId}, (err, p) => {
-        if (err) res.send(err);
-        player = p;
-    });
     var game = {};
-    await Game.findOne({_id: req.params.gameId}, (err, g) => {
+    
+    await Game.findById(req.params.gameId, (err, g) => {
         if (err) res.send(err);
         game = g;
     });
 
-    var playerGame = new PlayerGame();
-    playerGame.game = game;
-    playerGame.player = player;
-    playerGame.team = req.body.team;
-
-    playerGame.save((err,playergame) => {
+    await Player.findById(req.body.playerId, (err, player) => {
         if (err) res.send(err);
-        res.json(playerGame);
+        if (req.body.team == 'spies')
+            game.spies.push(player);
+        else if (req.body.team == 'resistance')
+            game.resistance.push(player);
     });
-}
+    res.json(game);
+};
 
+// DELETE
 exports.removePlayer = (req, res) => {
     PlayerGame.remove(
         {
@@ -138,4 +134,4 @@ exports.removePlayer = (req, res) => {
             res.json({message: 'player removed'});
         }
     )
-}
+};

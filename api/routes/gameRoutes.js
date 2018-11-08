@@ -12,9 +12,7 @@ module.exports = function(app) {
         .delete(games.delete);
 
     app.route('/game/:gameId/players')
-        .get(games.getPlayers);
-
-    app.route('/game/:gameId/players/:playerId')
+        .get(games.getPlayers)
         .post(games.addPlayer)
         .delete(games.removePlayer);
 };
